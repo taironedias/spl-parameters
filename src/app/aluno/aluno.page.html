@@ -6,29 +6,7 @@
 
 <ion-content padding>
 
-  <!-- ESCOLHA DA RESPOSTA -->
-  <ion-item>
-    <ion-grid>
-
-      <ion-row>
-        <ion-label> Escolha a opção de acesso: </ion-label>
-      </ion-row>
-
-      <ion-row>
-        <ion-segment [(ngModel)]="opcaoAcesso" (ionChange)="setOpcaoAcesso()">
-          <ion-segment-button value="keyexame">
-            <ion-label> Key Exame </ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="login">
-            <ion-label> Login </ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-row>
-
-    </ion-grid>
-  </ion-item>
-
-  <div *ngIf="opcaoAcesso == 'keyexame'">
+  <div *ngIf="accessKey">
 
     <ion-item>
       <ion-label position="floating"> Digite seu nome: </ion-label>
@@ -42,7 +20,7 @@
 
   </div>
   
-  <div *ngIf="opcaoAcesso == 'login'">
+  <div *ngIf="!accessKey">
     <ion-list>
 
       <ion-item>
@@ -58,6 +36,6 @@
     </ion-list>
   </div>
   
-  <ion-button *ngIf="opcaoAcesso == 'keyexame' || opcaoAcesso == 'login'" color="dark" (click)="makeExame()" fill="solid" expand="block"> {{ nameButton }} </ion-button>
+  <ion-button color="dark" (click)="makeExame()" fill="solid" expand="block"> {{ nameButton }} </ion-button>
 
 </ion-content>

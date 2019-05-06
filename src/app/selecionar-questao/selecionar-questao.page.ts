@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { QuestionDataService } from '../services/question-data.service';
 import { Router } from '@angular/router';
 import { ExameCustom } from '../exame';
 import { AlertController } from '@ionic/angular';
+import { ConfigService, LEVEL_BASE } from '../services/config';
+import { QuestaoCustom } from '../questao';
 
 @Component({
   selector: 'app-selecionar-questao',
@@ -11,21 +13,47 @@ import { AlertController } from '@ionic/angular';
 })
 export class SelecionarQuestaoPage implements OnInit {
 
+  level: boolean;
+
   nameExame = '';
   qstItens = [];
 
   constructor(private qstData: QuestionDataService,
-    private router: Router,
-    private alertCtrl: AlertController) { }
+              private router: Router,
+              private alertCtrl: AlertController,
+              private configService: ConfigService,
+              @Inject(LEVEL_BASE) levelBase: string) {
+    this.level = levelBase === 'true' ? true : false;
+  }
 
   ngOnInit() {
-    for (const qts of this.qstData.itens) {
-      this.qstItens.push({
-        value: qts.textoQst,
-        isChecked: false
-      });
+    if (this.level) {
+      for (let i = 1; i <= 3; i++) {
+        for (const qts of this.qstData.itens) {
+          if (qts.nivelDificuldade === i.toString()) {
+            this.qstItens.push({
+              value: qts.textoQst,
+              isChecked: false
+            });
+          }
+        }
+      }
+    } else {
+      for (const qts of this.qstData.itens) {
+        this.qstItens.push({
+          value: qts.textoQst,
+          isChecked: false
+        });
+      }
     }
 
+  }
+
+  sortLevel(questions: QuestaoCustom[]): QuestaoCustom[] {
+
+    questions.sort();
+    console.log(questions);
+    return questions;
   }
 
   addQuestions() {
@@ -36,7 +64,6 @@ export class SelecionarQuestaoPage implements OnInit {
       // console.log(item.value + '-->' + item.isChecked);
       if (item.isChecked) {
         exame.questoes.push(this.qstData.itens[i]);
-
       }
       i++;
     }

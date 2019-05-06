@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { QuestionDataService } from '../services/question-data.service';
 import { QuestaoCustom } from '../questao';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { ConfigService, LEVEL_BASE } from '../services/config';
 
 @Component({
   selector: 'app-atualizar-questao',
@@ -10,6 +11,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./atualizar-questao.page.scss'],
 })
 export class AtualizarQuestaoPage implements OnInit {
+
+  level: boolean;
 
   qst: QuestaoCustom;
   textoQuestao: string;
@@ -41,15 +44,21 @@ export class AtualizarQuestaoPage implements OnInit {
   ];
 
   constructor(private qstDataService: QuestionDataService,
-    private alertCtrl: AlertController,
-    private router: Router) { }
+              private alertCtrl: AlertController,
+              private router: Router,
+              private configService: ConfigService,
+              @Inject(LEVEL_BASE) levelBase: string) {
+    this.level = levelBase === 'true' ? true : false;
+  }
 
   ngOnInit() {
     // console.log(this.qstDataService.data);
     this.qst = this.qstDataService.data;
     this.textoQuestao = this.qst.textoQst;
     this.categoria = this.qst.categoria;
-    this.nivel = this.qst.nivelDificuldade;
+    if (this.level) {
+      this.nivel = this.qst.nivelDificuldade;
+    }
 
     if (this.qst.opcEscolha === 'unica') {
       this.opcResp = this.qst.opcEscolha;
@@ -99,7 +108,9 @@ export class AtualizarQuestaoPage implements OnInit {
 
       this.qst.textoQst = this.textoQuestao;
       this.qst.categoria = this.categoria;
-      this.qst.nivelDificuldade = this.nivel;
+      if (this.level) {
+        this.qst.nivelDificuldade = this.nivel;
+      }
       if (this.opcResp === 'unica') {
         this.qst.alternativas = this.formRadio;
         this.qst.textoLivre = null;
@@ -119,7 +130,7 @@ export class AtualizarQuestaoPage implements OnInit {
           this.qstDataService.itens[k] = this.qst;
         }
       }
-  
+
       console.log(this.qstDataService.itens);
       this.showAlert('Update', 'Questão atualizada com sucesso!');
       this.router.navigate(['tabs/pesquisar-questao']);

@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuestaoCustom } from '../questao';
 import { AlertController } from '@ionic/angular';
-import { range } from 'rxjs';
 import { QuestionDataService } from '../services/question-data.service';
+import { ConfigService, LEVEL_BASE } from '../services/config';
 
 @Component({
   selector: 'app-criar-questao',
@@ -11,6 +11,8 @@ import { QuestionDataService } from '../services/question-data.service';
   styleUrls: ['./criar-questao.page.scss'],
 })
 export class CriarQuestaoPage implements OnInit {
+
+  level: boolean;
 
   public listQuestions: Array<QuestaoCustom> = [];
 
@@ -61,8 +63,12 @@ export class CriarQuestaoPage implements OnInit {
   }
 
   constructor(private qstDataService: QuestionDataService,
-    private router: Router,
-    private alertCtrl: AlertController) { }
+              private router: Router,
+              private alertCtrl: AlertController,
+              private configService: ConfigService,
+              @Inject(LEVEL_BASE) levelBase: string) {
+    this.level = levelBase === 'true' ? true : false;
+  }
 
   ngOnInit() {
     this.valuesDefault();
@@ -81,7 +87,9 @@ export class CriarQuestaoPage implements OnInit {
       const qst = new QuestaoCustom();
       qst.textoQst = this.textoQuestao;
       qst.categoria = this.discpEscolhida;
-      qst.nivelDificuldade = this.nivel;
+      if (this.level) {
+        qst.nivelDificuldade = this.nivel;
+      }
       if (this.opcRespostaEscolhida === 'unica') {
         qst.alternativas = this.formRadio;
         qst.opcEscolha = this.opcRespostaEscolhida;
@@ -167,7 +175,9 @@ export class CriarQuestaoPage implements OnInit {
     const qst = new QuestaoCustom();
     qst.textoQst = 'Qual o time que mais vezes foi campeão brasileiro?';
     qst.categoria = 'História';
-    qst.nivelDificuldade = '1';
+    if (this.level) {
+      qst.nivelDificuldade = '2';
+    }
     qst.alternativas = [
       { val: 'Bahia', isChecked: false },
       { val: 'Palmeiras', isChecked: true },
@@ -181,7 +191,9 @@ export class CriarQuestaoPage implements OnInit {
     const qst2 = new QuestaoCustom();
     qst2.textoQst = 'Quais times vencedores da Libertadores?';
     qst2.categoria = 'História';
-    qst2.nivelDificuldade = '2';
+    if (this.level) {
+      qst2.nivelDificuldade = '1';
+    }
     qst2.alternativas = [
       { val: 'Santos', isChecked: true },
       { val: 'São Paulo', isChecked: true },
@@ -195,7 +207,9 @@ export class CriarQuestaoPage implements OnInit {
     const qst3 = new QuestaoCustom();
     qst3.textoQst = 'Qual time foi campeão da Copa do Brasil de 2018?';
     qst3.categoria = 'Física';
-    qst3.nivelDificuldade = '3';
+    if (this.level) {
+      qst3.nivelDificuldade = '3';
+    }
     qst3.alternativas = null;
     qst3.opcEscolha = 'texto';
     qst3.textoLivre = 'Cruzeiro';

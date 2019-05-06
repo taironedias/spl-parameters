@@ -1,3 +1,4 @@
 {
-    "ACCESS_KEY":"true"
+    "ACCESS":"key",
+    "LEVEL":"false"
 }

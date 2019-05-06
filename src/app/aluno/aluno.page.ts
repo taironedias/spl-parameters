@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuestaoCustom } from '../questao';
 import { ExameCustom } from '../exame';
 import { QuestionDataService } from '../services/question-data.service';
 import { AlertController } from '@ionic/angular';
+import { ConfigService, ACCESS_BASE, LEVEL_BASE } from '../services/config';
 
 @Component({
   selector: 'app-aluno',
@@ -12,7 +13,8 @@ import { AlertController } from '@ionic/angular';
 })
 export class AlunoPage implements OnInit {
 
-  opcaoAcesso = 'any';
+  accessKey: boolean;
+
   nameStudant = '';
   keyAcesso = '';
   ID = 0;
@@ -22,35 +24,39 @@ export class AlunoPage implements OnInit {
   nameButton = '';
 
   resetValues() {
-    this.opcaoAcesso = 'any';
-    this.nameStudant = '';
-    this.keyAcesso = '';
-    this.ID = 0;
-    this.flag = false;
-    this.username = '';
-    this.password = '';
+    if (this.accessKey) {
+      this.nameStudant = '';
+      this.keyAcesso = '';
+      this.ID = 0;
+      this.flag = false;
+    } else {
+      this.username = '';
+      this.password = '';
+    }
     this.nameButton = '';
   }
 
   constructor(private qstData: QuestionDataService,
-    private router: Router,
-    private alertCtrl: AlertController) { }
-
-  ngOnInit() {
-    this.resetValues();
-    this.valuesDefault();
+              private router: Router,
+              private alertCtrl: AlertController,
+              private configService: ConfigService,
+              @Inject(ACCESS_BASE) accessBase: string) {
+    this.accessKey = accessBase === 'key' ? true : false;
   }
 
-  setOpcaoAcesso() {
-    if (this.opcaoAcesso === 'keyexame') {
+  ngOnInit() {
+    if (this.qstData.examesArray !== null) {
+      this.valuesDefault();
+    }
+    if (this.accessKey) {
       this.nameButton = 'FAZER EXAME';
-    } else if (this.opcaoAcesso === 'login') {
+    } else {
       this.nameButton = 'LOGIN';
     }
   }
 
   makeExame() {
-    if (this.opcaoAcesso === 'keyexame') {
+    if (this.accessKey) {
       if (this.nameStudant === '' || this.nameStudant === null) {
         this.showAlert('Aviso', 'O campo nome do aluno deve ser preenchido!');
       } else if (this.keyAcesso === '' || this.keyAcesso === null) {
@@ -66,19 +72,21 @@ export class AlunoPage implements OnInit {
         }
 
         if (this.flag) {
+          this.resetValues();
           this.router.navigate(['fazer-exame', this.ID]);
         } else {
           this.keyAcesso = '';
           this.showAlert('Aviso', 'A chave está incorreta. Tente novamente!');
         }
       }
-    } else if (this.opcaoAcesso === 'login') {
+    } else {
       if (this.username === '') {
         this.showAlert('Aviso', 'Por favor, informe o seu username!');
       } else if (this.password === '') {
-        this.showAlert('Aviso', 'Por favor, informe o sua senha!');
+        this.showAlert('Aviso', 'Por favor, informe a sua senha!');
       } else {
         if (this.username === 'aluno' && this.password === '1234') {
+          this.resetValues();
           this.router.navigate(['fazer-exame', this.ID]);
         } else {
           this.username = '';
@@ -131,12 +139,9 @@ export class AlunoPage implements OnInit {
     qst3.textoLivre = 'Cruzeiro';
     qst3.id = '3333';
 
-    let exame = new ExameCustom();
+    const exame = new ExameCustom();
     exame.nameExame = 'Default System';
 
-    // this.qstData.itens.push(qst);
-    // this.qstData.itens.push(qst2);
-    // this.qstData.itens.push(qst3);
     exame.questoes.push(qst);
     exame.questoes.push(qst2);
     exame.questoes.push(qst3);
