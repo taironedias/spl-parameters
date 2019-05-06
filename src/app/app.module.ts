@@ -10,7 +10,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { HttpModule } from '@angular/http';
-import { ConfigService, ACCESS_BASE, ConfigFactory } from './services/config';
+import { ConfigService, ACCESS_BASE, ConfigFactory, LEVEL_BASE } from './services/config';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,8 +22,10 @@ import { ConfigService, ACCESS_BASE, ConfigFactory } from './services/config';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     ConfigService,
     { provide: 'CONFIG.JSON', useValue: './assets/config.json' },
-    { provide: 'BASE-ACCESS-VARIABLE', useValue: 'ACCESS_KEY' },
-    { provide: ACCESS_BASE, useFactory: ConfigFactory, deps: [ConfigService, 'CONFIG.JSON', 'BASE-ACCESS-VARIABLE'] }
+    { provide: 'BASE-ACCESS-VARIABLE', useValue: 'ACCESS' },
+    { provide: ACCESS_BASE, useFactory: ConfigFactory, deps: [ConfigService, 'CONFIG.JSON', 'BASE-ACCESS-VARIABLE'] },
+    { provide: 'BASE-LEVEL-VARIABLE', useValue: 'LEVEL' },
+    { provide: LEVEL_BASE, useFactory: ConfigFactory, deps: [ConfigService, 'CONFIG.JSON', 'BASE-LEVEL-VARIABLE'] }
   ],
   bootstrap: [AppComponent]
 })
